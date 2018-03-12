@@ -35,16 +35,78 @@ drop_table(TableName) when is_atom(TableName) ->
 
 
 
-select(Table, #sql_filter{} = Filter) ->
+select(Table, #sql_filter{conditions = Conditions, columns = Columns, limit = Limit} = Filter) ->
   case columns(Table) of
     {error, no_table} ->
       {error, 1036, <<"cannot select from non-existing ",Table/binary>>};
-    Columns ->
-      Rows = [lists:zipwith(fun({C,_},E) -> {C,E} end,Columns,tuple_to_list(R)) || R <- 
+    TableColumns ->
+
+      % ColumnIndex = lists:zipwith(fun({Col,_},I) -> {Col,I} end, TableColumns, lists:seq(1,length(TableColumns))),
+      % Head = list_to_tuple([list_to_atom("$" ++ integer_to_list(proplists:get_value(Col,ColumnIndex))) || Col <- Columns]),
+      % MatchSpec = sql_to_ms(Conditions, ColumnIndex),
+      % Output = ['$$'],
+      % MS = [{Head, MatchSpec, Output}],
+
+      % Select = case Limit of 
+      %   undefined -> ets:select(binary_to_existing_atom(Table,latin1),MS);
+      %   _ -> ets:select(binary_to_existing_atom(Table,latin1),MS,Limit)
+      % end,
+      % Select1 = case Select of
+      %   {error, E} ->
+      %     {error, 500, <<"Failed to select: ",(atom_to_binary(E,latin1))>>};
+      %   '$end_of_table' -> [];
+      %   {Selection0, _Continuation0} -> Selection0;
+      %   Selection0 when is_list(Selection0) -> Selection0
+      % end,
+      % if
+      %   is_list(Select1) -> 
+      %     NamedRows = [ maps:from_list(
+      %       lists:zipwith(fun({Col,_},V) -> {Col,V} end, TableColumns,Row)
+      %     ) || Row <- Select1],
+      %     sqlapi:apply_sql_filter(NamedRows, Filter);
+      %   true -> 
+      %     Select1
+      % end
+
+
+      Rows = [lists:zipwith(fun({C,_},E) -> {C,E} end,TableColumns,tuple_to_list(R)) || R <- 
         ets:tab2list(binary_to_existing_atom(Table,latin1))],
       Reply = sqlapi:apply_sql_filter(Rows, Filter),
       Reply
   end.
+
+
+% sql_to_ms(undefined, _) -> [];
+% sql_to_ms(Conditions, Map) -> [sql_to_ms0(Conditions,Map)].
+
+
+% sql_to_ms0({condition, Op, Arg1, Arg2}, Map) ->
+%   Op1 = case Op of
+%     nexo_and -> 'and';
+%     nexo_or -> 'or';
+%     eq -> '==';
+%     lt -> '<';
+%     gt -> '>';
+%     lte -> '=<';
+%     gte -> '>='
+%   end,
+%   {Op1, sql_to_ms0(Arg1, Map), sql_to_ms0(Arg2, Map)};
+
+% sql_to_ms0({key, Key, _, _}, Map) when is_atom(Key) ->
+%   proplists:get_value(Key, Map);
+
+% sql_to_ms0({key, Key, _, _}, Map) ->
+%   proplists:get_value(erlang:binary_to_existing_atom(Key,latin1), Map);
+
+% sql_to_ms0({value, _, Arg}, _) -> Arg.
+
+
+
+
+
+
+
+
 
 insert(Table, Rows) ->
   case columns(Table) of
