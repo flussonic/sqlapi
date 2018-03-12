@@ -1,5 +1,5 @@
 language: erlang
-script  : "make && make ct"
+script  : "make && make test"
 otp_release:
    - R20
    - R19
