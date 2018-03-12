@@ -1,0 +1,30 @@
+
+All source code in this repository except files listed belows has copyright of Erlyvideo LLC and is distributed under MIT license.
+
+You can use it for commercial or non-commercial purpose without any warranty. Do not come to us if this code injures anybody,
+blow a reactor, crashes a plane or do some any harm: this is AS IS.
+
+
+Following files are distributed under EPL (erlang public license):
+
+include/sql.hrl
+src/my_datatypes.erl
+src/my_packet.erl
+src/myproto.hrl
+test/sql_SUITE.erl
+
+
+Thanks a lot to Manuel Rubio <manuel@altenwald.com> for writing initial implementation of MySQL protocol and remember,
+that his code is also distributed AS IS + it is EPL, so do not close this source.
+
+Take a look at his code at https://github.com/altenwald/myproto  It is under LGPL there but we have took it when it was under EPL.
+
+
+Also this repository has code distributed by MIT from third party:
+
+src/sql92_parser.yrl  (and generated from it src/sql92_parser.erl)
+src/sql92_scan.xrl  (and generated from it src/sql92_scan.erl)
+
+Many thanks to Oleg Smirnov <oleg.smirnov@gmail.com>  and his work https://github.com/master/mongosql for this
+fast and convenient SQL parser
+

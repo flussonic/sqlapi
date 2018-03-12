@@ -1,0 +1,5 @@
+language: erlang
+script  : "make && make ct"
+otp_release:
+   - R20
+   - R19
