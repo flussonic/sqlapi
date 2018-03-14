@@ -465,6 +465,16 @@ default_reply(#request{info = #select{params=[#value{name = Name, value = Value}
   {reply, #response{status=?STATUS_OK, info=Info}, State};
 
 
+default_reply(#request{info = #select{params = [#function{name = <<"VERSION">>}]}}, State) ->
+  Version = version_from_handler(State),
+  ResponseFields = {
+    [#column{name = <<"VERSION()">>, type=?TYPE_VAR_STRING, length=20}],
+    [[Version]]
+  },
+  Response = #response{status=?STATUS_OK, info = ResponseFields},
+  {reply, Response, State};
+
+
 default_reply(#request{info = 'begin'}, State) ->
   {reply, #response{status = ?STATUS_OK}, State};
 

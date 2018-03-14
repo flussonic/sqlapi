@@ -62,7 +62,8 @@ groups() ->
     no_db_selected,
     describe_sql,
     order_by,
-    work_with_ram_table
+    work_with_ram_table,
+    check_version
   ]}].
 
 
@@ -189,6 +190,11 @@ order_by(_) ->
   end.
 
 
+check_version(_) ->
+  {ok, C} = nanomysql:connect("mysql://user:pass@127.0.0.1:4406/test_db"),
+  nanomysql:command(ping, <<>>, C),
+  [#{'VERSION()' := <<"5.6.0">>}] = nanomysql:select("SELECT VERSION()", C),
+  ok.
 
 
 
